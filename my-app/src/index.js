@@ -50,6 +50,7 @@ class Game extends React.Component {
     this.state = {
       history: [{
         squares: Array(9).fill(null),
+        lastModifiedSquareLocation: [null, null],
       }],
       stepNumber: 0,
       xIsNext: true,
@@ -67,6 +68,7 @@ class Game extends React.Component {
     this.setState({
       history: history.concat([{
         squares: squares,
+        lastModifiedSquareLocation: this._squareLocation(i),
       }]),
       stepNumber: history.length,
       xIsNext: !this.state.xIsNext,
@@ -80,6 +82,29 @@ class Game extends React.Component {
     });
   }
 
+  _squareLocation(index) {
+    //This method simply converts the index of a square in the squares array into its location on the Board
+    //using the [col, row] coordinates format
+    let [col, row] = [null, null];
+    //Checking row
+    if (index < 3) {
+      row = 1;
+    } else if (index < 6) {
+      row = 2;
+    } else {
+      row = 3;
+    }
+    //Checking col
+    if ((index % 3) === 0) {
+      col = 1;
+    } else if (((index - 1) % 3) === 0) {
+      col = 2;
+    } else {
+      col =3;
+    }
+    return [col, row];
+  }
+
   render() {
     //TODO how to make sure state is updated before rerendering?
     const history = this.state.history;
@@ -88,7 +113,7 @@ class Game extends React.Component {
 
     const moves = history.map((step, move) => {
       const desc = move ?
-        'Go to move #' + move :
+        `Go to move #${move} (${this.state.history[move].lastModifiedSquareLocation})` :
         'Go to game start';
       return (
         <li key={move}>
