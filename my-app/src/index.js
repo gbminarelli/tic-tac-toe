@@ -75,7 +75,16 @@ class Game extends React.Component {
     });
   }
 
-  jumpTo(step) { //TODO use the convention name for custom methods
+  _boldTargetItem(target) {
+    for (const child of target.parentElement.parentElement.children) {
+      child.firstElementChild.classList.remove('bold');
+    }
+    target.className = 'bold';
+  }
+
+  jumpTo(step, event) { //TODO use the convention name for custom methods
+    this._boldTargetItem(event.target);
+    //event.target.parentElement.parentElement.className = 'bold';
     this.setState({
       stepNumber: step,
       xIsNext: (step % 2) === 0,
@@ -117,7 +126,7 @@ class Game extends React.Component {
         'Go to game start';
       return (
         <li key={move}>
-          <button onClick={() => this.jumpTo(move)}>{desc}</button>
+          <button onClick={(event) => this.jumpTo(move, event)}>{desc}</button>
         </li>
       );
     });
