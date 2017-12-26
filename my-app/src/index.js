@@ -4,7 +4,7 @@ import './index.css';
 
 function Square(props) { //TODO better way with ES6
   return (
-    <button className="square" onClick={props.onClick}>
+    <button className = "square" onClick={props.onClick}>
       {props.value}
     </button>
   );
@@ -15,30 +15,40 @@ class Board extends React.Component {
     return (
       <Square
         //TODO how to make sure state is updated before sending it back to Square?
-        value={this.props.squares[i]}
-        onClick={() => this.props.onClick(i)}
+        key = {i}
+        value = {this.props.squares[i]}
+        onClick = {() => this.props.onClick(i)}
       />
     );
+  }
+
+  _renderRow(row) {
+    return (
+      <div
+        key = {row[0].key}
+        className = "board-row"
+      >
+        {row}
+      </div>
+    );
+  }
+
+  _renderBoard() {
+    const board = [];
+    for (let i = 0; i < 3; i++) {
+      const row = [];
+      for (let j = 0; j < 3; j++) {
+        row[j] = this.renderSquare((3 * i) + j);
+      }
+      board[i] = this._renderRow(row);
+    }
+    return board;
   }
 
   render() {
     return (
       <div>
-        <div className="board-row">
-          {this.renderSquare(0)}
-          {this.renderSquare(1)}
-          {this.renderSquare(2)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(3)}
-          {this.renderSquare(4)}
-          {this.renderSquare(5)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(6)}
-          {this.renderSquare(7)}
-          {this.renderSquare(8)}
-        </div>
+        {this._renderBoard()}
       </div>
     );
   }
@@ -84,7 +94,6 @@ class Game extends React.Component {
 
   jumpTo(step, event) { //TODO use the convention name for custom methods
     this._boldTargetItem(event.target);
-    //event.target.parentElement.parentElement.className = 'bold';
     this.setState({
       stepNumber: step,
       xIsNext: (step % 2) === 0,
