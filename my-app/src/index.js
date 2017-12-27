@@ -3,8 +3,9 @@ import ReactDOM from 'react-dom';
 import './index.css';
 
 function Square(props) { //TODO better way with ES6
+  const className = props.highlight ? "square highlight" : "square"
   return (
-    <button className = "square" onClick={props.onClick}>
+    <button className = {className} onClick={props.onClick}>
       {props.value}
     </button>
   );
@@ -18,6 +19,7 @@ class Board extends React.Component {
         key = {i}
         value = {this.props.squares[i]}
         onClick = {() => this.props.onClick(i)}
+        highlight = {(this.props.winnerSquares && this.props.winnerSquares.includes(i))}
       />
     );
   }
@@ -73,7 +75,7 @@ class Game extends React.Component {
     const history = this.state.history.slice(0, this.state.stepNumber + 1);
     const current = history[history.length - 1]; //TODO better way with ES6
     const squares = current.squares.slice(); //TODO better way with ES6
-    if (calculateWinner(squares) || squares[i]) {
+    if (calculateWinner(squares)[0] || squares[i]) {
       return;
     }
     squares[i] = this.state.xIsNext ? 'X' : 'O';
@@ -123,25 +125,20 @@ class Game extends React.Component {
     //TODO how to make sure state is updated before rerendering?
     const history = this.state.history;
     const current = history[this.state.stepNumber];
-    const winner = calculateWinner(current.squares);
+    const [winner, winnerSquares] = calculateWinner(current.squares);
 
     const movesAscending = history.map((step, move) => {
       const desc = move ?
         `Go to move #${move} (${this.state.history[move].lastModifiedSquareLocation})` :
         'Go to game start';
-      if (this.state.stepNumber === move && this.state.boldMoveItem) {
-        return (
-          <li key={move}>
-            <button onClick={() => this.jumpTo(move)} className='bold'>{desc}</button>
-          </li>
-        );
-      } else {
-        return (
-          <li key={move}>
-            <button onClick={() => this.jumpTo(move)}>{desc}</button>
-          </li>
-        );
-      }
+      const className = (this.state.stepNumber === move && this.state.boldMoveItem) ?
+        'bold' :
+        '';
+      return (
+        <li key={move}>
+          <button onClick={() => this.jumpTo(move)} className={className}>{desc}</button>
+        </li>
+      );
     });
 
     const moves = this.state.ascendingOrder ? movesAscending : movesAscending.reverse();
@@ -155,16 +152,17 @@ class Game extends React.Component {
     }
 
     return (
-      <div className="game">
-        <div className="game-board">
+      <div className = "game">
+        <div className = "game-board">
           <Board
-            squares={current.squares}
-            onClick={(i) => this.handleClick(i)}
+            winnerSquares = {winnerSquares}
+            squares = {current.squares}
+            onClick = {(i) => this.handleClick(i)}
           />
         </div>
-        <div className="game-info">
+        <div className = "game-info">
           <div>{status}</div>
-          <button onClick={() => {
+          <button onClick = {() => {
             this.setState({
               ascendingOrder: !this.state.ascendingOrder,
             });
@@ -190,10 +188,10 @@ function calculateWinner(squares) { //TODO better way with ES6 and change it to 
   for (let i = 0; i < lines.length; i++) { //TODO better way with ES6
     const [a, b, c] = lines[i];
     if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return squares[a];
+      return [squares[a], lines[i]];
     }
   }
-  return null;
+  return [null, null];
 }
 
 // ========================================
