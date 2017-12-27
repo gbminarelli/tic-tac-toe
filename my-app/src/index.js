@@ -64,6 +64,7 @@ class Game extends React.Component {
       }],
       stepNumber: 0,
       xIsNext: true,
+      boldMoveItem: false,
     };
   }
 
@@ -82,21 +83,15 @@ class Game extends React.Component {
       }]),
       stepNumber: history.length,
       xIsNext: !this.state.xIsNext,
+      boldMoveItem: false,
     });
   }
 
-  _boldTargetItem(target) {
-    for (const child of target.parentElement.parentElement.children) {
-      child.firstElementChild.classList.remove('bold');
-    }
-    target.className = 'bold';
-  }
-
-  jumpTo(step, event) { //TODO use the convention name for custom methods
-    this._boldTargetItem(event.target);
+  jumpTo(step) { //TODO use the convention name for custom methods
     this.setState({
       stepNumber: step,
       xIsNext: (step % 2) === 0,
+      boldMoveItem: true,
     });
   }
 
@@ -133,11 +128,19 @@ class Game extends React.Component {
       const desc = move ?
         `Go to move #${move} (${this.state.history[move].lastModifiedSquareLocation})` :
         'Go to game start';
-      return (
-        <li key={move}>
-          <button onClick={(event) => this.jumpTo(move, event)}>{desc}</button>
-        </li>
-      );
+      if (this.state.stepNumber === move && this.state.boldMoveItem) {
+        return (
+          <li key={move}>
+            <button onClick={() => this.jumpTo(move)} className='bold'>{desc}</button>
+          </li>
+        );
+      } else {
+        return (
+          <li key={move}>
+            <button onClick={(event) => this.jumpTo(move, event)}>{desc}</button>
+          </li>
+        );
+      }
     });
 
     let status;
