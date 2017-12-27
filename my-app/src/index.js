@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 
-function Square(props) { //TODO better way with ES6
+const Square = (props) => {
   const className = props.highlight ? "square highlight" : "square"
   return (
     <button className = {className} onClick={props.onClick}>
@@ -73,8 +73,8 @@ class Game extends React.Component {
 
   handleClick(i) { //TODO use the convention name for custom methods
     const history = this.state.history.slice(0, this.state.stepNumber + 1);
-    const current = history[history.length - 1]; //TODO better way with ES6
-    const squares = current.squares.slice(); //TODO better way with ES6
+    const current = history[history.length - 1];
+    const squares = current.squares.slice();
     if (calculateWinner(squares)[0] || squares[i]) {
       return;
     }
@@ -143,13 +143,7 @@ class Game extends React.Component {
 
     const moves = this.state.ascendingOrder ? movesAscending : movesAscending.reverse();
     const order = this.state.ascendingOrder ? 'Descending Order' : 'Ascending Order';
-
-    let status;
-    if (winner) {
-      status = `Winner: ${winner}`;
-    } else {
-      status = `Next player: ${this.state.xIsNext ? 'X' : 'O'}`;
-    }
+    let status = winner ? `Winner: ${winner}` : `Next player: ${this.state.xIsNext ? 'X' : 'O'}`;
 
     return (
       <div className = "game">
@@ -174,7 +168,7 @@ class Game extends React.Component {
   }
 }
 
-function calculateWinner(squares) { //TODO better way with ES6 and change it to _calculateWinner
+const calculateWinner = (squares) => { //TODO change it to _calculateWinner
   const lines = [
     [0, 1, 2],
     [3, 4, 5],
@@ -185,10 +179,9 @@ function calculateWinner(squares) { //TODO better way with ES6 and change it to 
     [0, 4, 8],
     [2, 4, 6],
   ];
-  for (let i = 0; i < lines.length; i++) { //TODO better way with ES6
-    const [a, b, c] = lines[i];
+  for (const [a, b, c] of lines) {
     if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return [squares[a], lines[i]];
+      return [squares[a], [a, b, c]];
     }
   }
   return [null, null];
