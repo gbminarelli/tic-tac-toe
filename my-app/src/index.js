@@ -3,9 +3,12 @@ import ReactDOM from 'react-dom';
 import './index.css';
 
 const Square = (props) => {
-  const className = props.highlight ? "square highlight" : "square"
+  const className = props.highlight ? 'square highlight' : 'square';
   return (
-    <button className = {className} onClick={props.onClick}>
+    <button
+    className = {className}
+    onClick = {props.onClick}
+    >
       {props.value}
     </button>
   );
@@ -15,11 +18,10 @@ class Board extends React.Component {
   _renderSquare(i) {
     return (
       <Square
-        //TODO how to make sure state is updated before sending it back to Square?
-        key = {i}
-        value = {this.props.squares[i]}
-        onClick = {() => this.props.onClick(i)}
-        highlight = {(this.props.winnerSquares && this.props.winnerSquares.includes(i))}
+      key = {i}
+      value = {this.props.squares[i]}
+      onClick = {() => this.props.onClick(i)}
+      highlight = {(this.props.winnerSquares && this.props.winnerSquares.includes(i))}
       />
     );
   }
@@ -27,8 +29,8 @@ class Board extends React.Component {
   _renderRow(row) {
     return (
       <div
-        key = {row[0].key}
-        className = "board-row"
+      key = {row[0].key}
+      className = 'board-row'
       >
         {row}
       </div>
@@ -101,28 +103,12 @@ class Game extends React.Component {
   _squareLocation(index) {
     //This method simply converts the index of a square in the squares array into its location on the Board
     //using the [col, row] coordinates format
-    let [col, row] = [null, null];
-    //Checking row
-    if (index < 3) {
-      row = 1;
-    } else if (index < 6) {
-      row = 2;
-    } else {
-      row = 3;
-    }
-    //Checking col
-    if ((index % 3) === 0) {
-      col = 1;
-    } else if (((index - 1) % 3) === 0) {
-      col = 2;
-    } else {
-      col =3;
-    }
+    const col = 1 + (index % 3);
+    const row = 1 + ((index + 1 - col) / 3);
     return [col, row];
   }
 
   render() {
-    //TODO how to make sure state is updated before rerendering?
     const history = this.state.history;
     const current = history[this.state.stepNumber];
     const [winner, winnerSquares] = _calculateWinner(current.squares);
@@ -135,15 +121,15 @@ class Game extends React.Component {
         'bold' :
         '';
       return (
-        <li key={move}>
-          <button onClick={() => this._jumpTo(move)} className={className}>{desc}</button>
+        <li key = {move}>
+          <button onClick = {() => this._jumpTo(move)} className = {className}>{desc}</button>
         </li>
       );
     });
 
     const moves = this.state.ascendingOrder ? movesAscending : movesAscending.reverse();
     const order = this.state.ascendingOrder ? 'Descending Order' : 'Ascending Order';
-    let status = winner ? `Winner: ${winner}` : `Next player: ${this.state.xIsNext ? 'X' : 'O'}`;
+    const status = winner ? `Winner: ${winner}` : `Next player: ${this.state.xIsNext ? 'X' : 'O'}`;
 
     return (
       <div className = "game">
