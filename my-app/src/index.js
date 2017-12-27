@@ -12,7 +12,7 @@ const Square = (props) => {
 }
 
 class Board extends React.Component {
-  renderSquare(i) { //TODO use the convention name for custom methods
+  _renderSquare(i) {
     return (
       <Square
         //TODO how to make sure state is updated before sending it back to Square?
@@ -40,7 +40,7 @@ class Board extends React.Component {
     for (let i = 0; i < 3; i++) {
       const row = [];
       for (let j = 0; j < 3; j++) {
-        row[j] = this.renderSquare((3 * i) + j);
+        row[j] = this._renderSquare((3 * i) + j);
       }
       board[i] = this._renderRow(row);
     }
@@ -71,11 +71,11 @@ class Game extends React.Component {
     };
   }
 
-  handleClick(i) { //TODO use the convention name for custom methods
+  _handleClick(i) {
     const history = this.state.history.slice(0, this.state.stepNumber + 1);
     const current = history[history.length - 1];
     const squares = current.squares.slice();
-    if (calculateWinner(squares)[0] || squares[i]) {
+    if (_calculateWinner(squares)[0] || squares[i]) {
       return;
     }
     squares[i] = this.state.xIsNext ? 'X' : 'O';
@@ -90,7 +90,7 @@ class Game extends React.Component {
     });
   }
 
-  jumpTo(step) { //TODO use the convention name for custom methods
+  _jumpTo(step) {
     this.setState({
       stepNumber: step,
       xIsNext: (step % 2) === 0,
@@ -125,7 +125,7 @@ class Game extends React.Component {
     //TODO how to make sure state is updated before rerendering?
     const history = this.state.history;
     const current = history[this.state.stepNumber];
-    const [winner, winnerSquares] = calculateWinner(current.squares);
+    const [winner, winnerSquares] = _calculateWinner(current.squares);
 
     const movesAscending = history.map((step, move) => {
       const desc = move ?
@@ -136,7 +136,7 @@ class Game extends React.Component {
         '';
       return (
         <li key={move}>
-          <button onClick={() => this.jumpTo(move)} className={className}>{desc}</button>
+          <button onClick={() => this._jumpTo(move)} className={className}>{desc}</button>
         </li>
       );
     });
@@ -151,7 +151,7 @@ class Game extends React.Component {
           <Board
             winnerSquares = {winnerSquares}
             squares = {current.squares}
-            onClick = {(i) => this.handleClick(i)}
+            onClick = {(i) => this._handleClick(i)}
           />
         </div>
         <div className = "game-info">
@@ -168,7 +168,7 @@ class Game extends React.Component {
   }
 }
 
-const calculateWinner = (squares) => { //TODO change it to _calculateWinner
+const _calculateWinner = (squares) => {
   const lines = [
     [0, 1, 2],
     [3, 4, 5],
